@@ -114,9 +114,12 @@ public class MainWindow {
 			lblwebcam.setIcon(new ImageIcon(newFrame.getBufferedImage() ));
 			text_cam1.setText(Integer.toString(x) + '/' + Integer.toString(y));
 			
-			//check if position above line
-			if (y<200)
+			//check if position above line and throw the ball
+			if (y<200) //constant height trigger
 			{
+				//v1: variable is only the point on the x-axis (works with a single camera). Z is constant and triggers the throw
+				//v2: variables are x and z. Y is constant, it triggers the the throw (y=direction from place where the player stand towards the basketball basket, x=left to right, z=height
+				//v3: addition to v2, there will be a 3D speed vector
 				text_cam1.setText("Shooot");
 			}
 		}
