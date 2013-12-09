@@ -1,24 +1,25 @@
-
-
+import com.bulletphysics.demos.opengl.GLDebugDrawer;
+import com.bulletphysics.demos.opengl.LWJGL;
 import com.googlecode.javacv.FrameGrabber;
-import static com.googlecode.javacv.cpp.opencv_core.*;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import java.awt.Color;
-import java.awt.EventQueue;
+
+import com.googlecode.javacv.cpp.*;
+import org.lwjgl.LWJGLException;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.vecmath.Vector3f;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.border.LineBorder;
-import javax.swing.text.View;
-import javax.swing.JTextField;
+import static com.googlecode.javacv.cpp.opencv_core.*;
 
 
 public class MainWindow {
 
+    BasicDemo demo;
 	private JFrame frame;
 	FrameGrabber grabber;
 	JLabel lblwebcam;
@@ -61,11 +62,17 @@ public class MainWindow {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws LWJGLException {
+
+
+        final BasicDemo ccdDemo = new BasicDemo(LWJGL.getGL());
+        ccdDemo.initPhysics();
+        ccdDemo.getDynamicsWorld().setDebugDrawer(new GLDebugDrawer(LWJGL.getGL()));
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow window = new MainWindow();
+					MainWindow window = new MainWindow(ccdDemo);
 					window.frame.setVisible(true);
 					
 					window.startWebcam();
@@ -76,12 +83,16 @@ public class MainWindow {
 				}
 			}
 		});
+
+
+        LWJGL.main(args, 800, 600, "Bullet Physics Demo. http://bullet.sf.net", ccdDemo);
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public MainWindow() {
+	public MainWindow(BasicDemo demo) {
+        this.demo = demo;
 		initialize();
 	}
 	
@@ -117,6 +128,9 @@ public class MainWindow {
 			//check if position above line and throw the ball
 			if (y<200) //constant height trigger
 			{
+
+                demo.shootBox(new Vector3f(x, 6, 5));
+
 				//v1: variable is only the point on the x-axis (works with a single camera). Z is constant and triggers the throw
 				//v2: variables are x and z. Y is constant, it triggers the the throw (y=direction from place where the player stand towards the basketball basket, x=left to right, z=height
 				//v3: addition to v2, there will be a 3D speed vector
