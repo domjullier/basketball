@@ -34,6 +34,7 @@ public class MainWindow {
 	IplImage img1, img2, histimg;
 	CvBox2D track_box = new CvBox2D();
 	boolean isTracking=false;
+	boolean readyToShoot=true;
 	int[] trackObject = new int[2];
 	private JLabel lblCam;
 	private JLabel lblCam_1;
@@ -125,11 +126,16 @@ public class MainWindow {
 			lblwebcam.setIcon(new ImageIcon(newFrame.getBufferedImage() ));
 			text_cam1.setText(Integer.toString(x) + '/' + Integer.toString(y));
 			
-			//check if position above line and throw the ball
-			if (y<200) //constant height trigger
+			if (y>400)
 			{
-
-                demo.shootBox(new Vector3f(x, 6, 5));
+				readyToShoot=true;
+			}
+			
+			//check if position above line and throw the ball
+			if (y<200 && isTracking && readyToShoot) //constant height trigger
+			{
+				readyToShoot = false;
+                demo.shootBox(new Vector3f(x/20, 6, 5));
 
 				//v1: variable is only the point on the x-axis (works with a single camera). Z is constant and triggers the throw
 				//v2: variables are x and z. Y is constant, it triggers the the throw (y=direction from place where the player stand towards the basketball basket, x=left to right, z=height
@@ -184,6 +190,8 @@ public class MainWindow {
 		
 		lblwebcam = new JLabel("Waiting for webcam...");
 		lblwebcam2 = new JLabel("Waiting for webcam...");
+		
+				
 		lblwebcam.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -212,7 +220,7 @@ public class MainWindow {
 		lblwebcam2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
+				//
 				//markerSet=false;
 				p2X=0;
 				p2Y=0;
