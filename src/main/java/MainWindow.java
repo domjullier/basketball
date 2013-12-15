@@ -136,7 +136,7 @@ public class MainWindow {
 			if (y<200 && isTracking && readyToShoot) //constant height trigger
 			{
 				readyToShoot = false;
-                demo.shootBox(new Vector3f(x/20, 6, 5));
+                demo.shootBox(new Vector3f(x/20, 6, z/20));
 
 				//v1: variable is only the point on the x-axis (works with a single camera). Z is constant and triggers the throw
 				//v2: variables are x and z. Y is constant, it triggers the the throw (y=direction from place where the player stand towards the basketball basket, x=left to right, z=height
