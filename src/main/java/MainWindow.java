@@ -23,7 +23,7 @@ public class MainWindow {
 	private JFrame frame;
 	FrameGrabber grabber;
 	JLabel lblwebcam;
-	JLabel lblwebcam2;
+	//JLabel lblwebcam2;
 	Thread thCam1;
 	Thread thView;
 	//public CvPoint origin = new CvPoint();
@@ -39,7 +39,7 @@ public class MainWindow {
 	private JLabel lblCam;
 	private JLabel lblCam_1;
 	private JTextField text_cam1;
-	private JTextField text_cam2;
+	//private JTextField text_cam2;
 	View3D view;
 	int x, y, z;    
 	
@@ -98,7 +98,7 @@ public class MainWindow {
 	}
 	
 	private void startWebcam() {
-		GrabberShow gs = new GrabberShow(this, new int[]{0});
+		GrabberShow gs = new GrabberShow(this, new int[]{1});
 		View3D view = new View3D(this);
 		
 		//view.initialize();
@@ -116,15 +116,16 @@ public class MainWindow {
 	}
 	*/
 	
-	public void newFrame(IplImage newFrame, int id, int x, int y)
+	public void newFrame(IplImage newFrame, int id, int x, int y, int r)
 	{
 		
 		if(id==0)
 		{	
 			this.x=x;
-			this.z=y;
+			this.y=y;
+			this.z = r*2;
 			lblwebcam.setIcon(new ImageIcon(newFrame.getBufferedImage() ));
-			text_cam1.setText(Integer.toString(x) + '/' + Integer.toString(y));
+			text_cam1.setText(Integer.toString(x) + '/' + Integer.toString(y) + '/' + Integer.toString(z));
 			
 			if (y>400)
 			{
@@ -147,8 +148,8 @@ public class MainWindow {
 		{
 			this.y=x;
 			//view.setNewPosition(x, y, z);
-			lblwebcam2.setIcon(new ImageIcon(newFrame.getBufferedImage() ));
-			text_cam2.setText(Integer.toString(x) + '/' + Integer.toString(y));
+			//lblwebcam2.setIcon(new ImageIcon(newFrame.getBufferedImage() ));
+			//text_cam2.setText(Integer.toString(x) + '/' + Integer.toString(y));
 		}
 	}
 	
@@ -182,14 +183,14 @@ public class MainWindow {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(0, 0, 1600, 900);
+		frame.setBounds(0, 0, 800, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		//selection = new CvRect();
 		
 		lblwebcam = new JLabel("Waiting for webcam...");
-		lblwebcam2 = new JLabel("Waiting for webcam...");
+		//lblwebcam2 = new JLabel("Waiting for webcam...");
 		
 				
 		lblwebcam.addMouseListener(new MouseAdapter() {
@@ -217,7 +218,7 @@ public class MainWindow {
 			}
 		});
 		
-		lblwebcam2.addMouseListener(new MouseAdapter() {
+		/*lblwebcam2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				//
@@ -240,7 +241,8 @@ public class MainWindow {
 				//trackObject[0]=-1;
 				trackObject[1]=-1;
 			}
-		});
+		});*/
+		
 		lblwebcam.setBorder(new LineBorder(Color.BLACK, 2));
 		lblwebcam.setForeground(Color.BLACK);
 		lblwebcam.setBackground(Color.WHITE);
@@ -248,11 +250,11 @@ public class MainWindow {
 		frame.getContentPane().add(lblwebcam);
 		
 		
-		lblwebcam2.setForeground(Color.BLACK);
-		lblwebcam2.setBorder(new LineBorder(Color.BLACK, 2));
-		lblwebcam2.setBackground(Color.WHITE);
-		lblwebcam2.setBounds(664, 12, 640, 480);
-		frame.getContentPane().add(lblwebcam2);
+		//lblwebcam2.setForeground(Color.BLACK);
+		//lblwebcam2.setBorder(new LineBorder(Color.BLACK, 2));
+		//lblwebcam2.setBackground(Color.WHITE);
+		//lblwebcam2.setBounds(664, 12, 640, 480);
+		//frame.getContentPane().add(lblwebcam2);
 		
 		lblCam = new JLabel("Cam1");
 		lblCam.setBounds(26, 539, 70, 15);
@@ -263,14 +265,14 @@ public class MainWindow {
 		frame.getContentPane().add(lblCam_1);
 		
 		text_cam1 = new JTextField();
-		text_cam1.setBounds(26, 566, 56, 19);
+		text_cam1.setBounds(26, 566, 100, 19);
 		frame.getContentPane().add(text_cam1);
 		text_cam1.setColumns(10);
 		
-		text_cam2 = new JTextField();
-		text_cam2.setColumns(10);
-		text_cam2.setBounds(130, 566, 56, 19);
-		frame.getContentPane().add(text_cam2);
+		//text_cam2 = new JTextField();
+		//text_cam2.setColumns(10);
+		//text_cam2.setBounds(130, 566, 56, 19);
+		//frame.getContentPane().add(text_cam2);
 	}
 
 	public CvRect getSelection(int id) {

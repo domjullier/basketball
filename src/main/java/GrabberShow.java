@@ -26,8 +26,8 @@ public class GrabberShow implements Runnable
     IplImage[] hsv, hue, mask, backproject, histimg;
     CvHistogram[] hist;
     int[] hdims = {16};
-    float hranges_arr[][] = {{0, 180}};
-    int vmin = 62, vmax = 256, smin = 110;
+    float hranges_arr[][] = {{0, 250}};
+    int vmin = 0, vmax = 256, smin = 0;
     CvRect[] tracking_window;
     CvConnectedComp[] track_comp = new CvConnectedComp[2];
     CvBox2D[] track_box = new CvBox2D[2];
@@ -100,7 +100,7 @@ public class GrabberShow implements Runnable
         			CvPoint lp2 = cvPointFrom32f(new CvPoint2D32f(640, 200));
         			cvLine(img2[i], lp1, lp2, CvScalar.RED, 2, 8, 0 );
         			
-        			detectMainref.newFrame(img2[i], i, 0, 0);
+        			detectMainref.newFrame(img2[i], i, 0, 0, 0);
 	            	img2[i] = grabber[i].grab();
             	}
             }
@@ -132,7 +132,7 @@ public class GrabberShow implements Runnable
 		        	int x = tracking_window[i].x()+(tracking_window[i].width()/2);
 		        	int y = tracking_window[i].y()+(tracking_window[i].height()/2);
 		        	
-		        	detectMainref.newFrame(img1[i], i, x, y);
+		        	detectMainref.newFrame(img1[i], i, x, y, (tracking_window[i].width()+tracking_window[i].height()/4));
 		        	
 		        	
 		        	
@@ -215,7 +215,7 @@ public class GrabberShow implements Runnable
              if(track_comp[id]==null)
             	 track_comp[id] = new CvConnectedComp();
              
-             cvCamShift(backproject[id], tracking_window[id], cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 0.1), track_comp[id], track_box[id]);
+             cvCamShift(backproject[id], tracking_window[id], cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 5, 0.1), track_comp[id], track_box[id]);
 
              tracking_window[id] = track_comp[id].rect();
              track_box[id].angle(-track_box[id].angle());
@@ -226,7 +226,11 @@ public class GrabberShow implements Runnable
              }
              if (img1.origin() == 0) {
                  track_box[id] = track_box[id].angle(-track_box[id].angle());
-                 cvEllipseBox(img1, track_box[id], CV_RGB(255, 0, 0), 3, CV_AA, 0);
+                 //cvEllipseBox(img1, track_box[id], CV_RGB(255, 0, 0), 3, CV_AA, 0);
+                 CvPoint2D32f points = new CvPoint2D32f();
+
+                 //cvCircle(img1, cvPoint(tracking_window[0].x(), tracking_window[0].y()), (tracking_window[0].width() + tracking_window[0].height())/4, CV_RGB(255, 0, 0), 3, CV_AA, 0);
+                 cvCircle(img1, cvPoint(tracking_window[0].x()+tracking_window[0].width()/2, tracking_window[0].y()+tracking_window[0].height()/2), (tracking_window[0].width() + tracking_window[0].height())/4, CV_RGB(255, 0, 0), 3, CV_AA, 0);
              }
          }
          if (select_object > 0 && detectMainref.getSelection(id).width() > 0 && detectMainref.getSelection(id).height() > 0) {
