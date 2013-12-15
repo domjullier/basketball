@@ -98,7 +98,7 @@ public class MainWindow {
 	}
 	
 	private void startWebcam() {
-		GrabberShow gs = new GrabberShow(this, new int[]{1});
+		GrabberShow gs = new GrabberShow(this, new int[]{0});
 		View3D view = new View3D(this);
 		
 		//view.initialize();
