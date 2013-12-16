@@ -59,7 +59,7 @@ public class BasicDemo extends DemoApplication {
 	private DefaultCollisionConfiguration collisionConfiguration;
 	private float mousePickClamping;
 
-    private Vector3f playerPos = new Vector3f(-3,-3,-3);
+    private Vector3f playerPos = new Vector3f(0,-3,-10);
 
 	protected float ShootBoxInitialSpeed = 20f;
 	
@@ -193,21 +193,33 @@ public class BasicDemo extends DemoApplication {
 			//body.setActivationState(RigidBody.ISLAND_SLEEPING);
 			
 		}
+
+        /*CollisionShape testShape = new SphereShape(5);
+        collisionShapes.add(testShape);
+        Transform testTransform = new Transform();
+        testTransform.setIdentity();
+        testTransform.origin.set(1, 3, 20);
+        dynamicsWorld.addRigidBody(new RigidBody(new RigidBodyConstructionInfo(0.0f,new DefaultMotionState(testTransform),testShape,new Vector3f(0, 0, 0))));
+*/
+
+
+
         CollisionShape basketShape = new BoxShape(new Vector3f(1.0f, 1.0f,5.0f));
         collisionShapes.add(basketShape);
         Transform basketTransform = new Transform();
         basketTransform.setIdentity();
-        basketTransform.origin.set(20, 3, 20);
+        basketTransform.origin.set(4, 5, 8);
         DefaultMotionState basketMotionState = new DefaultMotionState(basketTransform);
         RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(0.0f, basketMotionState,basketShape,new Vector3f(0, 0, 0));
         RigidBody basketBody = new RigidBody(rbInfo);
         dynamicsWorld.addRigidBody(basketBody);
 
+
         CollisionShape basketShape2 = new BoxShape(new Vector3f(5.0f, 1.0f,1.0f));
         collisionShapes.add(basketShape2);
         Transform basketTransform2 = new Transform();
         basketTransform2.setIdentity();
-        basketTransform2.origin.set(16, 3, 16);
+        basketTransform2.origin.set(0, 5, 4);
         DefaultMotionState basketMotionState2 = new DefaultMotionState(basketTransform2);
         RigidBody basketBody2 = new RigidBody(new RigidBodyConstructionInfo(0.0f, basketMotionState2,basketShape2,new Vector3f(0, 0, 0)));
         dynamicsWorld.addRigidBody(basketBody2);
@@ -216,7 +228,7 @@ public class BasicDemo extends DemoApplication {
         collisionShapes.add(basketShape3);
         Transform basketTransform3 = new Transform();
         basketTransform3.setIdentity();
-        basketTransform3.origin.set(16, 3, 24);
+        basketTransform3.origin.set(0, 5, 12);
         DefaultMotionState basketMotionState3 = new DefaultMotionState(basketTransform3);
         RigidBody basketBody3 = new RigidBody(new RigidBodyConstructionInfo(0.0f, basketMotionState3,basketShape3,new Vector3f(0, 0, 0)));
         dynamicsWorld.addRigidBody(basketBody3);
@@ -226,7 +238,7 @@ public class BasicDemo extends DemoApplication {
         collisionShapes.add(basketShape4);
         Transform basketTransform4 = new Transform();
         basketTransform4.setIdentity();
-        basketTransform4.origin.set(12, 3, 20);
+        basketTransform4.origin.set(-4, 5, 8);
         DefaultMotionState basketMotionState4 = new DefaultMotionState(basketTransform4);
         RigidBodyConstructionInfo rbInfo4 = new RigidBodyConstructionInfo(0.0f, basketMotionState4,basketShape4,new Vector3f(0, 0, 0));
         RigidBody basketBody4 = new RigidBody(rbInfo4);
@@ -246,7 +258,7 @@ public class BasicDemo extends DemoApplication {
 		{
 		//Vector3f rayTo = new Vector3f(getRayTo(x, y));
 		
-		Vector3f rayTo = new Vector3f(3, 6, 5);
+		Vector3f rayTo = new Vector3f(0, 18, 5);
         //Vector3f rayTo = new Vector3f(0, 11, 0);
 		
 		shootBox(rayTo);
