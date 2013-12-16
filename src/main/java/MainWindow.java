@@ -3,6 +3,7 @@ import com.bulletphysics.demos.opengl.LWJGL;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_video.CvKalman;
 
 import com.googlecode.javacv.cpp.*;
 import org.lwjgl.LWJGLException;
@@ -15,7 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
-
+import java.util.LinkedList; //fifo for speed average
 
 public class MainWindow {
 
@@ -41,7 +42,19 @@ public class MainWindow {
 	private JTextField text_cam1;
 	//private JTextField text_cam2;
 	View3D view;
-	int x, y, z;    
+	int x, y, z;
+	int px=0, py=0, pz=0;
+	LinkedList<Integer> speedXFifo;
+	LinkedList<Integer> speedYFifo;
+	LinkedList<Integer> speedZFifo;
+	
+	int speedXTotal = 0;
+	int speedYTotal = 0;
+	int speedZTotal = 0;
+	
+	int speedX = 0;
+	int speedY = 0;
+	int speedZ = 0;
 	
 	public int[] getPosition()
 	{	
@@ -124,6 +137,40 @@ public class MainWindow {
 			this.x=x;
 			this.y=y;
 			this.z = r*2;
+			
+			//add to speed fifo
+			speedXFifo.add (Math.abs(x-px));
+			speedXFifo.removeFirst();
+			
+			speedYFifo.add (Math.abs(y-py));
+			speedYFifo.removeFirst();
+			
+			speedZFifo.add (Math.abs(z-pz));
+			speedZFifo.removeFirst();
+			
+			px=x;
+			py=y;
+			pz=z;
+			
+			speedXTotal = 0;
+			speedYTotal = 0;
+			speedZTotal = 0;
+			
+			for(int i = 0; i<15; i++)
+			{
+				speedXTotal += speedXFifo.get(i);
+				speedYTotal += speedYFifo.get(i);
+				speedZTotal += speedZFifo.get(i);
+			}
+			
+			speedXTotal = speedXTotal/15;
+			speedYTotal = speedYTotal/15;
+			speedZTotal = speedZTotal/15;
+			
+			System.out.println("Current X/Y/Z speed: " + speedX + " / " + speedY + " / " + speedZ);
+			
+			
+			
 			lblwebcam.setIcon(new ImageIcon(newFrame.getBufferedImage() ));
 			text_cam1.setText(Integer.toString(x) + '/' + Integer.toString(y) + '/' + Integer.toString(z));
 			
@@ -136,6 +183,9 @@ public class MainWindow {
 			if (y<200 && isTracking && readyToShoot) //constant height trigger
 			{
 				readyToShoot = false;
+				
+				//speed range between 0 and 20px per second
+				//implementation is currently quite poor, needs scaling for x and y, depending on distance from cam...
                 demo.shootBox(new Vector3f(x/20, 6, z/20));
 
 				//v1: variable is only the point on the x-axis (works with a single camera). Z is constant and triggers the throw
@@ -181,6 +231,7 @@ public class MainWindow {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("unchecked")
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(0, 0, 800, 700);
@@ -218,30 +269,7 @@ public class MainWindow {
 			}
 		});
 		
-		/*lblwebcam2.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				//
-				//markerSet=false;
-				p2X=0;
-				p2Y=0;
-				p1X=e.getX();
-				p1Y=e.getY();
-				
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				
-				p2X=e.getX();
-				p2Y=e.getY();
-								
-				selection[1] = cvRect(p1X, p2Y, p2X-p1X, p1Y-p2Y);
-				//selection[1] = cvRect(p1X, p2Y, p2X-p1X, p1Y-p2Y);
-				isTracking=true;
-				//trackObject[0]=-1;
-				trackObject[1]=-1;
-			}
-		});*/
+		
 		
 		lblwebcam.setBorder(new LineBorder(Color.BLACK, 2));
 		lblwebcam.setForeground(Color.BLACK);
@@ -249,12 +277,6 @@ public class MainWindow {
 		lblwebcam.setBounds(12, 12, 640, 480);
 		frame.getContentPane().add(lblwebcam);
 		
-		
-		//lblwebcam2.setForeground(Color.BLACK);
-		//lblwebcam2.setBorder(new LineBorder(Color.BLACK, 2));
-		//lblwebcam2.setBackground(Color.WHITE);
-		//lblwebcam2.setBounds(664, 12, 640, 480);
-		//frame.getContentPane().add(lblwebcam2);
 		
 		lblCam = new JLabel("Cam1");
 		lblCam.setBounds(26, 539, 70, 15);
@@ -269,10 +291,18 @@ public class MainWindow {
 		frame.getContentPane().add(text_cam1);
 		text_cam1.setColumns(10);
 		
-		//text_cam2 = new JTextField();
-		//text_cam2.setColumns(10);
-		//text_cam2.setBounds(130, 566, 56, 19);
-		//frame.getContentPane().add(text_cam2);
+		//get average speed
+		speedXFifo = new LinkedList<Integer>();
+		speedYFifo = new LinkedList<Integer>();
+		speedZFifo = new LinkedList<Integer>();
+		for(int i = 0; i<15; i++)
+		{
+			speedXFifo.add(0);
+			speedYFifo.add(0);
+			speedZFifo.add(0);
+		}	
+
+		
 	}
 
 	public CvRect getSelection(int id) {

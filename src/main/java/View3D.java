@@ -103,7 +103,7 @@ public class View3D implements GLEventListener, KeyListener, Runnable {
    
    public void setNewPosition(int x, int y, int z)
    {
-	   System.out.println(x + " " + y + "" + z);
+	   //System.out.println(x + " " + y + "" + z);
 	   //x: 0 do 640
 	   //y: 0 do 640
 	   //z: 0 do 480
@@ -199,7 +199,7 @@ public class View3D implements GLEventListener, KeyListener, Runnable {
 	  this.ballZ =(float) (pos[2]/480.0)*5;
 	 
 	  
-	  System.out.println("x: " + this.ballX + " " + "y: " + this.ballY + " " + "z: " + this.ballZ);
+	  //System.out.println("x: " + this.ballX + " " + "y: " + this.ballY + " " + "z: " + this.ballZ);
 	  
 	  float fact1= (this.ballX - this.randX)*(this.ballX - this.randX);
 	  float fact2= (this.ballY - this.randY)*(this.ballY - this.randY);
@@ -333,7 +333,7 @@ public void keyPressed(KeyEvent e) {
 	 
 	 int[] result = detectMainref.getPosition();
 	 
-	 System.out.println( result[0] + " " + result[1] + " "  + result[2]); 
+	 //System.out.println( result[0] + " " + result[1] + " "  + result[2]); 
 	
 }
 
