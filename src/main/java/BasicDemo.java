@@ -40,11 +40,19 @@ import com.bulletphysics.linearmath.DebugDrawModes;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import com.bulletphysics.util.ObjectArrayList;
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.TextureIO;
 import org.lwjgl.LWJGLException;
-
+import com.jogamp.opengl.util.texture.Texture;
+import javax.imageio.ImageIO;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2ES1;
+import javax.media.opengl.GLException;
 import javax.vecmath.Color3f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
+
+import java.io.*;
 
 import static com.bulletphysics.demos.opengl.IGL.*;
 
@@ -58,6 +66,7 @@ public class BasicDemo extends DemoApplication {
 	private ConstraintSolver solver;
 	private DefaultCollisionConfiguration collisionConfiguration;
 	private float mousePickClamping;
+    private Texture basketballTexture;
 
     private Vector3f playerPos = new Vector3f(0,-3,-10);
 
@@ -102,7 +111,11 @@ public class BasicDemo extends DemoApplication {
 		//glutSwapBuffers();
 	}
 
-	public void initPhysics() {
+	public void initPhysics() throws IOException {
+
+        //InputStream stream = getClass().getResourceAsStream("images/crate.png");
+        //basketballTexture =   TextureIO.newTexture(stream, false, "png");
+
 		setCameraDistance(50f);
 
 		// collision configuration contains default setup for memory, collision setup
@@ -194,15 +207,13 @@ public class BasicDemo extends DemoApplication {
 			
 		}
 
-        /*CollisionShape testShape = new SphereShape(5);
-        collisionShapes.add(testShape);
-        Transform testTransform = new Transform();
-        testTransform.setIdentity();
-        testTransform.origin.set(1, 3, 20);
-        dynamicsWorld.addRigidBody(new RigidBody(new RigidBodyConstructionInfo(0.0f,new DefaultMotionState(testTransform),testShape,new Vector3f(0, 0, 0))));
+        /*CollisionShape ballShape = new SphereShape(1);
+        //collisionShapes.add(ballShape);
+        Transform ballTransform = new Transform();
+        ballTransform.setIdentity();
+        ballTransform.origin.set(playerPos.x,playerPos.y, playerPos.z);
+        dynamicsWorld.addRigidBody(new RigidBody(new RigidBodyConstructionInfo(0.0f,new DefaultMotionState(ballTransform),ballShape,new Vector3f(0, 0, 0))));
 */
-
-
 
         CollisionShape basketShape = new BoxShape(new Vector3f(1.0f, 1.0f,5.0f));
         collisionShapes.add(basketShape);
@@ -370,6 +381,7 @@ public class BasicDemo extends DemoApplication {
 
 			body.setCcdMotionThreshold(1f);
 			body.setCcdSweptSphereRadius(0.2f);
+
 		}
 	}
 	
@@ -421,6 +433,15 @@ public class BasicDemo extends DemoApplication {
 	
 	@Override
 	public void renderme() {
+
+        float[] rgba = {1f, 1f, 1f};
+
+        gl.glPushMatrix();
+            gl.glColor3f(1,0,0);
+            gl.glTranslatef(playerPos.x,playerPos.y, playerPos.z);
+            gl.drawSphere(2,32,32);
+        gl.glPopMatrix();
+
 		updateCamera();
 
 		if (dynamicsWorld != null) {
@@ -646,7 +667,7 @@ public class BasicDemo extends DemoApplication {
 		updateCamera();
 	}
 	
-	public static void main(String[] args) throws LWJGLException {
+	public static void main(String[] args) throws LWJGLException, IOException {
 		BasicDemo ccdDemo = new BasicDemo(LWJGL.getGL());
 		ccdDemo.initPhysics();
 		ccdDemo.getDynamicsWorld().setDebugDrawer(new GLDebugDrawer(LWJGL.getGL()));

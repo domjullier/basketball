@@ -16,6 +16,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static com.googlecode.javacv.cpp.opencv_core.*;
+
+import java.io.IOException;
 import java.util.LinkedList; //fifo for speed average
 
 public class MainWindow {
@@ -76,7 +78,7 @@ public class MainWindow {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) throws LWJGLException {
+	public static void main(String[] args) throws LWJGLException, IOException {
 
 
         final BasicDemo ccdDemo = new BasicDemo(LWJGL.getGL());
