@@ -3,9 +3,6 @@ import com.bulletphysics.demos.opengl.LWJGL;
 import com.googlecode.javacv.FrameGrabber;
 import com.googlecode.javacv.cpp.opencv_core.CvScalar;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import com.googlecode.javacv.cpp.opencv_video.CvKalman;
-
-import com.googlecode.javacv.cpp.*;
 import org.lwjgl.LWJGLException;
 
 import javax.swing.*;
@@ -26,14 +23,10 @@ public class MainWindow {
 	private JFrame frame;
 	FrameGrabber grabber;
 	JLabel lblwebcam;
-	//JLabel lblwebcam2;
 	Thread thCam1;
 	Thread thView;
-	//public CvPoint origin = new CvPoint();
 	CvRect[] selection = new CvRect[2];
-	//CvRect track_window = new CvRect();
 	int p1X, p1Y, p2X, p2Y;
-	//boolean markerSet, trackNow, ggg;
 	IplImage img1, img2, histimg;
 	CvBox2D track_box = new CvBox2D();
 	boolean isTracking=false;
@@ -42,7 +35,6 @@ public class MainWindow {
 	private JLabel lblCam;
 	private JLabel lblCam_1;
 	private JTextField text_cam1;
-	//private JTextField text_cam2;
 	View3D view;
 	int x, y, z;
 	int px=0, py=0, pz=0;
@@ -113,10 +105,8 @@ public class MainWindow {
 	}
 	
 	private void startWebcam() {
-		GrabberShow gs = new GrabberShow(this, new int[]{0});
+		GrabberShow gs = new GrabberShow(this, new int[]{1});
 		View3D view = new View3D(this);
-		
-		//view.initialize();
 		
 		thView = new Thread(view);
 		thCam1 = new Thread(gs);
@@ -124,12 +114,6 @@ public class MainWindow {
 		thView.start();
 	}
 	
-	/*
-	private void stopWebcam() {
-		thCam1.interrupt();
-		thCam1=null;
-	}
-	*/
 	
 	public void newFrame(IplImage newFrame, int id, int x, int y, int r)
 	{
@@ -140,6 +124,7 @@ public class MainWindow {
 			this.y=y;
 			this.z = r*2;
 			
+			demo.setPlayerPos((x/-32) +10, y, (z-300)/15);
 			//add to speed fifo
 			speedXFifo.add (Math.abs(x-px));
 			speedXFifo.removeFirst();
@@ -165,12 +150,9 @@ public class MainWindow {
 				speedZTotal += speedZFifo.get(i);
 			}
 			
-			speedXTotal = speedXTotal/15;
-			speedYTotal = speedYTotal/15;
-			speedZTotal = speedZTotal/15;
-			
-			System.out.println("Current X/Y/Z speed: " + speedX + " / " + speedY + " / " + speedZ);
-			
+			speedX = speedXTotal/15;
+			speedY = speedYTotal/15;
+			speedZ = speedZTotal/15;
 			
 			
 			lblwebcam.setIcon(new ImageIcon(newFrame.getBufferedImage() ));
@@ -182,26 +164,14 @@ public class MainWindow {
 			}
 			
 			//check if position above line and throw the ball
-			if (y<200 && isTracking && readyToShoot) //constant height trigger
+			if (z>100 && isTracking && readyToShoot) //constant height trigger
 			{
 				readyToShoot = false;
 				
 				//speed range between 0 and 20px per second
-				//implementation is currently quite poor, needs scaling for x and y, depending on distance from cam...
-                demo.shootBox(new Vector3f(x/20, 6, z/20));
-
-				//v1: variable is only the point on the x-axis (works with a single camera). Z is constant and triggers the throw
-				//v2: variables are x and z. Y is constant, it triggers the the throw (y=direction from place where the player stand towards the basketball basket, x=left to right, z=height
-				//v3: addition to v2, there will be a 3D speed vector
-				text_cam1.setText("Shooot");
+                demo.shootBox(new Vector3f(speedX, speedY, speedZ));
+		
 			}
-		}
-		if(id==1)
-		{
-			this.y=x;
-			//view.setNewPosition(x, y, z);
-			//lblwebcam2.setIcon(new ImageIcon(newFrame.getBufferedImage() ));
-			//text_cam2.setText(Integer.toString(x) + '/' + Integer.toString(y));
 		}
 	}
 	
@@ -233,7 +203,7 @@ public class MainWindow {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(0, 0, 800, 700);
@@ -243,8 +213,7 @@ public class MainWindow {
 		//selection = new CvRect();
 		
 		lblwebcam = new JLabel("Waiting for webcam...");
-		//lblwebcam2 = new JLabel("Waiting for webcam...");
-		
+	
 				
 		lblwebcam.addMouseListener(new MouseAdapter() {
 			@Override
@@ -284,7 +253,7 @@ public class MainWindow {
 		lblCam.setBounds(26, 539, 70, 15);
 		frame.getContentPane().add(lblCam);
 		
-		lblCam_1 = new JLabel("Cam2");
+		lblCam_1 = new JLabel("");
 		lblCam_1.setBounds(130, 539, 70, 15);
 		frame.getContentPane().add(lblCam_1);
 		

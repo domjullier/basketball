@@ -15,26 +15,30 @@ import com.googlecode.javacv.cpp.opencv_imgproc.CvHistogram;
 
 public class GrabberShow implements Runnable
 {
-    //final int INTERVAL=1000;///you may use interval
     IplImage image[];
-    //JLabel lblwebcam;
     FrameGrabber[] grabber;
     MainWindow detectMainref;
     boolean isTracking=false;
     
-    //bispill
     IplImage[] hsv, hue, mask, backproject, histimg;
     CvHistogram[] hist;
     int[] hdims = {16};
     float hranges_arr[][] = {{0, 250}};
-    int vmin = 0, vmax = 256, smin = 0;
+    int vmin = 100, vmax = 256, smin = 100;
     CvRect[] tracking_window;
     CvConnectedComp[] track_comp = new CvConnectedComp[2];
     CvBox2D[] track_box = new CvBox2D[2];
     int backproject_mode = 0;
     int select_object = 0;
-    //end
     int[] cams;
+	private int pos_x;
+	private int pos_y;
+	private int radius;
+	
+	KalmanFilter kx = new KalmanFilter();
+	KalmanFilter ky = new KalmanFilter();
+	KalmanFilter kr = new KalmanFilter();
+	
 
     public GrabberShow(MainWindow detectMainref, int[] cams) 
     {
@@ -96,9 +100,9 @@ public class GrabberShow implements Runnable
 	            	
 	            	
 	            	//draw line
-        			CvPoint lp1 = cvPointFrom32f(new CvPoint2D32f(0, 200));
-        			CvPoint lp2 = cvPointFrom32f(new CvPoint2D32f(640, 200));
-        			cvLine(img2[i], lp1, lp2, CvScalar.RED, 2, 8, 0 );
+        			//CvPoint lp1 = cvPointFrom32f(new CvPoint2D32f(0, 200));
+        			//CvPoint lp2 = cvPointFrom32f(new CvPoint2D32f(640, 200));
+        			//cvLine(img2[i], lp1, lp2, CvScalar.RED, 2, 8, 0 );
         			
         			detectMainref.newFrame(img2[i], i, 0, 0, 0);
 	            	img2[i] = grabber[i].grab();
@@ -126,13 +130,8 @@ public class GrabberShow implements Runnable
         			
 		        	camshift_tracking(img1[i], img2[i], detectMainref.getSelection(i), i);
 		        	
-		        	//System.out.println("CAM" + i + ": " + tracking_window[i].x() + " " + tracking_window[i].y());
 		        	
-		        	
-		        	int x = tracking_window[i].x()+(tracking_window[i].width()/2);
-		        	int y = tracking_window[i].y()+(tracking_window[i].height()/2);
-		        	
-		        	detectMainref.newFrame(img1[i], i, x, y, (tracking_window[i].width()+tracking_window[i].height()/4));
+		        	detectMainref.newFrame(img1[i], i, pos_x, pos_y, radius);
 		        	
 		        	
 		        	
@@ -142,7 +141,6 @@ public class GrabberShow implements Runnable
             		}
                 	
                 }
-                 //Thread.sleep(100);
             }
             
             for(int i=0; i<cams.length; i++) {
@@ -156,7 +154,7 @@ public class GrabberShow implements Runnable
     
     public void camshift_tracking(IplImage img1, IplImage img2, CvRect bb, int id)
 	{
-    	//System.out.println(img1.cvSize());
+
     	if (hsv[id] == null) {
             hsv[id] = cvCreateImage(img1.cvSize(), 8, 3);
             hue[id] = cvCreateImage(img1.cvSize(), 8, 1);
@@ -226,11 +224,16 @@ public class GrabberShow implements Runnable
              }
              if (img1.origin() == 0) {
                  track_box[id] = track_box[id].angle(-track_box[id].angle());
-                 //cvEllipseBox(img1, track_box[id], CV_RGB(255, 0, 0), 3, CV_AA, 0);
-                 CvPoint2D32f points = new CvPoint2D32f();
 
-                 //cvCircle(img1, cvPoint(tracking_window[0].x(), tracking_window[0].y()), (tracking_window[0].width() + tracking_window[0].height())/4, CV_RGB(255, 0, 0), 3, CV_AA, 0);
-                 cvCircle(img1, cvPoint(tracking_window[0].x()+tracking_window[0].width()/2, tracking_window[0].y()+tracking_window[0].height()/2), (tracking_window[0].width() + tracking_window[0].height())/4, CV_RGB(255, 0, 0), 3, CV_AA, 0);
+
+                 //Kalman here
+                 pos_x = kx.update(tracking_window[0].x()+tracking_window[0].width()/2);
+                 pos_y = ky.update(tracking_window[0].y()+tracking_window[0].height()/2);
+                 radius = kr.update((tracking_window[0].width() + tracking_window[0].height())/4);
+               
+                 
+                 cvCircle(img1, cvPoint(pos_x, pos_y), radius, CV_RGB(255, 0, 0), 3, CV_AA, 0);
+                 
              }
          }
          if (select_object > 0 && detectMainref.getSelection(id).width() > 0 && detectMainref.getSelection(id).height() > 0) {
@@ -264,14 +267,6 @@ public class GrabberShow implements Runnable
         return cvScalar(rgb[2], rgb[1], rgb[0], 0);
     }
 
- 
- /*
-    public class TestGrabber {
-        public void main(String[] args) {
-            GrabberShow gs = new GrabberShow();
-            Thread th = new Thread(gs);
-            th.start();
-        }
-    }
-    */
+	
+    
 }

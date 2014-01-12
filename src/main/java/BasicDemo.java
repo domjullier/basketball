@@ -40,14 +40,8 @@ import com.bulletphysics.linearmath.DebugDrawModes;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import com.bulletphysics.util.ObjectArrayList;
-import com.jogamp.opengl.util.texture.TextureData;
-import com.jogamp.opengl.util.texture.TextureIO;
 import org.lwjgl.LWJGLException;
 import com.jogamp.opengl.util.texture.Texture;
-import javax.imageio.ImageIO;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2ES1;
-import javax.media.opengl.GLException;
 import javax.vecmath.Color3f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
@@ -69,6 +63,13 @@ public class BasicDemo extends DemoApplication {
     private Texture basketballTexture;
 
     private Vector3f playerPos = new Vector3f(0,-3,-10);
+    
+    public void setPlayerPos(float x, float y, float z)
+    {
+    	this.playerPos.x = x;
+    	//this.playerPos.y = y;
+    	this.playerPos.z = z;
+    }
 
 	protected float ShootBoxInitialSpeed = 20f;
 	
