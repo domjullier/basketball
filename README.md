@@ -13,3 +13,8 @@ Important:
 lwjgl: Needs the so called native library location in eclipse (for example: jbullet-20101010/lib/lwjgl/linux)
 
 
+Howto run
+-----
+
+After compilation, start the class MainWindow.
+
