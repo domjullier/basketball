@@ -16,5 +16,5 @@ lwjgl: Needs the so called native library location in eclipse (for example: jbul
 Howto run
 -----
 
-After compilation, start the class MainWindow.
+After compilation, start the class MainWindow (Three windows should appear: MainGUI, JBullet simulation and OpenGL Vizualization.
 
